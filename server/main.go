@@ -1,19 +1,19 @@
 package main
 
 import (
-    "database/sql"
-    "fmt"
-    "log"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	_ "github.com/lib/pq"
+	"log"
+	"net/http"
 	"os"
-    "net/http"
-    "encoding/json"
-    _ "github.com/lib/pq"
 )
 
 type Todo struct {
-    ID        int    `json:"id"`
-    Task      string `json:"task"`
-    Completed bool   `json:"completed"`
+	ID        int    `json:"id"`
+	Task      string `json:"task"`
+	Completed bool   `json:"completed"`
 }
 
 var db *sql.DB
@@ -35,32 +35,32 @@ func init() {
 }
 
 func getTodos(w http.ResponseWriter, r *http.Request) {
-    rows, err := db.Query("SELECT * FROM todos")
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-    defer rows.Close()
+	rows, err := db.Query("SELECT * FROM todos")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
 
-    var todos []Todo
-    for rows.Next() {
-        var t Todo
-        if err := rows.Scan(&t.ID, &t.Task, &t.Completed); err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
-            return
-        }
-        todos = append(todos, t)
-    }
+	var todos []Todo
+	for rows.Next() {
+		var t Todo
+		if err := rows.Scan(&t.ID, &t.Task, &t.Completed); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		todos = append(todos, t)
+	}
 
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(todos)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(todos)
 }
 
 func main() {
 	defer db.Close()
-    http.HandleFunc("/todos", getTodos)
-    // Add handlers for Create, Update, Delete
+	http.HandleFunc("/todos", getTodos)
+	// Add handlers for Create, Update, Delete
 
-    fmt.Println("Server started on :8080")
-    http.ListenAndServe(":8080", nil)
+	fmt.Println("Server started on :8080")
+	http.ListenAndServe(":8080", nil)
 }
