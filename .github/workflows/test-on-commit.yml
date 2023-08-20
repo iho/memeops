@@ -27,5 +27,5 @@ jobs:
         working-directory: server
 
       - name: Run tests
-        run: cd server; go test ./...
+        run: go test ./...
         working-directory: server
