@@ -17,13 +17,15 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          path: server/~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('server/**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
 
       - name: Download dependencies
         run: go mod download
+        working-directory: server
 
       - name: Run tests
         run: cd server; go test ./...
+        working-directory: server
