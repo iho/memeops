@@ -1,0 +1,7 @@
+config:
+  aws:region: eu-central-1
+  test:desiredClusterSize: "3"
+  test:eksNodeInstanceType: t3.medium
+  test:maxClusterSize: "6"
+  test:minClusterSize: "3"
+  test:vpcNetworkCidr: 10.0.0.0/16
